@@ -1,9 +1,10 @@
-const express = require("express");
-const cors = require("cors");
-const helmet = require("helmet");
-const morgan = require("morgan");
-const compression = require("compression");
-const cookieParser = require("cookie-parser");
+import express from "express";
+import cors from "cors";
+import helmet from "helmet";
+import morgan from "morgan";
+import compression from "compression";
+import cookieParser from "cookie-parser";
+import authRoutes from "./modules/auth/auth.routes.js";
 
 const app = express();
 
@@ -28,12 +29,15 @@ app.use(compression());
 // Logging
 app.use(morgan("dev"));
 
+// routes
+app.use("/api/v1/auth", authRoutes);
+
 // Health Check Route
 app.get("/", (req, res) => {
   res.status(200).json({
     success: true,
-    message: "EduSphere ERP Backend Running 🚀",
+    message: "School ERP Backend Running",
   });
 });
 
-module.exports = app;
+export default app;

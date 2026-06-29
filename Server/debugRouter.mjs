@@ -1,0 +1,21 @@
+import app from './src/app.js';
+const layer = app.router.stack.find((l) => l.name === 'router' && l.handle?.stack);
+console.log('found layer', !!layer);
+if (!layer) process.exit(0);
+console.log('layer keys', Object.getOwnPropertyNames(layer));
+console.log('layer path', layer.path);
+console.log('layer regexp', layer.regexp, layer.regexp?.toString());
+console.log('layer matchers', layer.matchers);
+console.log('layer handle keys', Object.getOwnPropertyNames(layer.handle));
+console.log('layer handle path', layer.handle.path);
+console.log('layer handle name', layer.handle.name);
+console.log('layer handle prefix', layer.handle.prefix);
+console.log('layer handle params', layer.handle.params);
+console.log('layer handle settings', layer.handle.settings);
+console.log('handle.stack len', layer.handle.stack.length);
+layer.handle.stack.forEach((sub, i) => {
+  console.log(' sub', i, sub.name, Object.getOwnPropertyNames(sub));
+  console.log('   sub path', sub.path);
+  console.log('   sub regexp', sub.regexp?.toString());
+  console.log('   sub route', sub.route ? { path: sub.route.path, methods: sub.route.methods } : null);
+});
