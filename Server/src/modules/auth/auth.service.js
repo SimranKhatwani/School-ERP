@@ -1,10 +1,12 @@
 import authRepository from "./auth.repository.js";
 import refreshTokenRepository from "./refreshToken.repository.js";
+import otpRepository from "./otp.repository.js";
 
 import hashPassword from "../../utils/hashPassword.js";
 import comparePassword from "../../utils/comparePassword.js";
 import generateToken from "../../utils/generateToken.js";
 import generateRefreshToken from "../../utils/generateRefreshToken.js";
+import generateOTP from "../../utils/generateOTP.js";
 
 // REGISTER 
 
@@ -169,6 +171,66 @@ const logoutAllDevices = async (userId) => {
 
 
 
+// OTP LOGIN
+const sendOTP = async (email) => {
+  const user = await authRepository.findUserByEmail(email);
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  await otpRepository.deleteExistingOTP(user._id);
+
+  const otp = generateOTP();
+  const hashedOTP = await hashPassword(otp);
+
+  await otpRepository.createOTP({
+    user: user._id,
+    otp: hashedOTP,
+    expiresAt: new Date(Date.now() + 5 * 60 * 1000), // 5 minutes
+  });
+
+  return process.env.NODE_ENV === "development" ? { otp } : null;
+};
+
+const verifyOTP = async (email, otp) => {
+  const user = await authRepository.findUserByEmail(email);
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  const otpRecord = await otpRepository.findOTPByUser(user._id);
+
+  if (!otpRecord) {
+    throw new Error("OTP Expired or Invalid");
+  }
+
+  const isMatch = await comparePassword(otp, otpRecord.otp);
+
+  if (!isMatch) {
+    throw new Error("Invalid OTP");
+  }
+
+  await otpRepository.deleteOTP(otpRecord._id);
+
+  const accessToken = generateToken(user._id);
+  const refreshToken = generateRefreshToken(user._id);
+
+  // Save Refresh Token
+  await refreshTokenRepository.createRefreshToken({
+    user: user._id,
+    token: refreshToken,
+    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+  });
+
+  return {
+    accessToken,
+    refreshToken,
+    user,
+  };
+};
+
 export default {
   register,
   login,
@@ -176,5 +238,7 @@ export default {
   changePassword,
   refreshAccessToken,
   logout,
-    logoutAllDevices,
+  logoutAllDevices,
+  sendOTP,
+  verifyOTP,
 };

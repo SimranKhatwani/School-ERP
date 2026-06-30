@@ -3,9 +3,9 @@ import authController from "./auth.controller.js";
 import authMiddleware from "../../middleware/auth.middleware.js";
 import loginLimiter from "../../middleware/loginRateLimiter.js";
 import validate from "../../middleware/validate.middleware.js";
-import {registerSchema,loginSchema,changePasswordSchema,} from "../../validation/auth.validation.js";
+import { registerSchema, loginSchema, changePasswordSchema, sendOtpSchema, verifyOtpSchema } from "../../validation/auth.validation.js";
 import auditLogger from "../../middleware/auditLogger.middleware.js";
-
+import { sendOtpLimiter, verifyOtpLimiter } from "../../middleware/otpLimiter.js";
 
 
 const router = express.Router();
@@ -13,6 +13,10 @@ const router = express.Router();
 router.post("/register", validate(registerSchema), authController.register);
 
 router.post("/login",loginLimiter,auditLogger("USER_LOGIN") ,validate(loginSchema),authController.login);
+
+router.post("/send-otp", sendOtpLimiter, auditLogger("SEND_OTP"), validate(sendOtpSchema), authController.sendOTP);
+
+router.post("/verify-otp", verifyOtpLimiter, auditLogger("VERIFY_OTP"), validate(verifyOtpSchema), authController.verifyOTP);
 
 router.get("/me", authMiddleware, authController.getCurrentUser);
 

@@ -18,3 +18,12 @@ export const changePasswordSchema = z.object({
   oldPassword: z.string().min(1),
   newPassword: z.string().min(6),
 });
+
+export const sendOtpSchema = z.object({
+  email: z.email("Invalid email"),
+});
+
+export const verifyOtpSchema = z.object({
+  email: z.email("Invalid email"),
+  otp: z.string().length(6, "OTP must be exactly 6 digits"),
+});

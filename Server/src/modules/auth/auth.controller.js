@@ -130,6 +130,42 @@ const refreshToken = async (req, res) => {
 };
 
 
+const sendOTP = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const data = await authService.sendOTP(email);
+
+    res.status(200).json({
+      success: true,
+      message: "OTP sent successfully",
+      ...(data && { data }),
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+const verifyOTP = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    const data = await authService.verifyOTP(email, otp);
+
+    res.status(200).json({
+      success: true,
+      message: "Login successful",
+      data,
+    });
+  } catch (error) {
+    res.status(401).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 export default {
   register,
   login,
@@ -138,4 +174,6 @@ export default {
   changePassword,
   refreshToken,
   logoutAllDevices,
+  sendOTP,
+  verifyOTP,
 };
