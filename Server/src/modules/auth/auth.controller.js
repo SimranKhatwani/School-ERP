@@ -36,7 +36,57 @@ const login = async (req, res) => {
   }
 };
 
+const getCurrentUser = async (req, res) => {
+  try {
+    const user = await authService.getCurrentUser(req.user._id);
+
+    res.status(200).json({
+      success: true,
+      message: "User fetched successfully",
+      data: user,
+    });
+  } catch (error) {
+    res.status(404).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+const logout = async (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Logout successful",
+  });
+};
+
+const changePassword = async (req, res) => {
+  try {
+    const { oldPassword, newPassword } = req.body;
+
+    await authService.changePassword(
+      req.user._id,
+      oldPassword,
+      newPassword
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Password changed successfully",
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+
 export default {
   register,
   login,
+  getCurrentUser,
+    logout,
+    changePassword,
 };

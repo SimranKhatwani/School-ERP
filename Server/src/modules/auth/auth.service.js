@@ -43,7 +43,52 @@ const login = async (email, password) => {
   };
 };
 
+//  GET CURRENT USER 
+
+const getCurrentUser = async (userId) => {
+  const user = await authRepository.findUserById(userId);
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  return user;
+};
+
+// CHANGE PASSWORD 
+
+const changePassword = async (
+  userId,
+  oldPassword,
+  newPassword
+) => {
+  // Fetch user WITH password
+  const user = await authRepository.findUserWithPassword(userId);
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  const isMatch = await comparePassword(
+    oldPassword,
+    user.password
+  );
+
+  if (!isMatch) {
+    throw new Error("Old password is incorrect");
+  }
+
+  const hashedPassword = await hashPassword(newPassword);
+
+  await authRepository.updatePassword(
+    userId,
+    hashedPassword
+  );
+};
+
 export default {
   register,
   login,
+  getCurrentUser,
+  changePassword,
 };
