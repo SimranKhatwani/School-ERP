@@ -21,7 +21,7 @@ const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const data = await authService.login(email, password);
+    const result = await authService.login(email, password);
 
     res.status(200).json({
       success: true,
@@ -54,10 +54,37 @@ const getCurrentUser = async (req, res) => {
 };
 
 const logout = async (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: "Logout successful",
-  });
+  try {
+    const { refreshToken } = req.body;
+
+    await authService.logout(refreshToken);
+
+    res.status(200).json({
+      success: true,
+      message: "Logout successful",
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+const logoutAllDevices = async (req, res) => {
+  try {
+    await authService.logoutAllDevices(req.user.id);
+
+    res.status(200).json({
+      success: true,
+      message: "Logged out from all devices",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
 
 const changePassword = async (req, res) => {
@@ -82,11 +109,33 @@ const changePassword = async (req, res) => {
   }
 };
 
+const refreshToken = async (req, res) => {
+  try {
+    const { refreshToken } = req.body;
+
+    const data =
+      await authService.refreshAccessToken(refreshToken);
+
+    res.status(200).json({
+      success: true,
+      message: "Access token refreshed",
+      data,
+    });
+  } catch (error) {
+    res.status(401).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 
 export default {
   register,
   login,
   getCurrentUser,
-    logout,
-    changePassword,
+  logout,
+  changePassword,
+  refreshToken,
+  logoutAllDevices,
 };

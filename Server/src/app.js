@@ -6,6 +6,10 @@ import compression from "compression";
 import cookieParser from "cookie-parser";
 import authRoutes from "./modules/auth/auth.routes.js";
 import errorMiddleware from "./middleware/error.middleware.js";
+import apiLimiter from "./middleware/apiRateLimiter.js";
+import mongoSanitize from "express-mongo-sanitize"
+import hpp from "hpp";
+
 
 const app = express();
 
@@ -24,8 +28,15 @@ app.use(
   })
 );
 
+// Rate Limiting
+app.use(apiLimiter);
+
 // Parse JSON
 app.use(express.json());
+
+app.use(mongoSanitize());
+
+app.use(hpp());
 
 // Parse URL Encoded Data
 app.use(express.urlencoded({ extended: true }));
