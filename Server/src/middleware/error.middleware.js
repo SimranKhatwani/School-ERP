@@ -1,4 +1,5 @@
 const errorMiddleware = (err, req, res, next) => {
+  // Handle invalid JSON
   if (err instanceof SyntaxError && err.status === 400 && "body" in err) {
     return res.status(400).json({
       success: false,
@@ -8,9 +9,9 @@ const errorMiddleware = (err, req, res, next) => {
 
   console.error(err);
 
-  res.status(err.status || 500).json({
+  res.status(err.statusCode || err.status || 500).json({
     success: false,
-    message: err.message || "Internal server error",
+    message: err.message || "Internal Server Error",
   });
 };
 
