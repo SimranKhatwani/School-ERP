@@ -9,6 +9,8 @@ import errorMiddleware from "./middleware/error.middleware.js";
 import apiLimiter from "./middleware/apiRateLimiter.js";
 import mongoSanitize from "express-mongo-sanitize"
 import hpp from "hpp";
+import tenantRoutes from "./modules/tenant/tenant.routes.js";
+import tenantResolver from "./middleware/tenantResolver.js";
 
 
 const app = express();
@@ -34,7 +36,7 @@ app.use(apiLimiter);
 // Parse JSON
 app.use(express.json());
 
-app.use(mongoSanitize());
+// app.use(mongoSanitize());
 
 app.use(hpp());
 
@@ -52,6 +54,7 @@ app.use(morgan("dev"));
 
 // routes
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/tenants", tenantRoutes);
 
 // Health Check Route
 app.get("/", (req, res) => {

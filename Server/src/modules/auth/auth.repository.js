@@ -1,18 +1,30 @@
 import User from "../user/user.model.js";
 
-const findUserByEmail = async (email) => {
-  return await User.findOne({ email });
+const findUserByEmail = async (email, tenantId) => {
+    return await User.findOne({
+        email,
+        tenant: tenantId,
+    });
 };
 
-const findUserById = async (id) => {
-  return await User.findById(id).select("-password");
+const findUserById = async (id, tenantId) => {
+    return await User.findOne({
+        _id: id,
+        tenant: tenantId,
+    }).select("-password");
 };
 
-const findUserWithPassword = async (id) => {
-  return await User.findById(id);
+const findUserWithPassword = async (
+    id,
+    tenantId
+) => {
+    return await User.findOne({
+        _id: id,
+        tenant: tenantId,
+    });
 };
 
-const updatePassword = async (id, password) => {
+const updatePassword = async (id, password, tenantId) => {
   return await User.findByIdAndUpdate(
     id,
     { password },
@@ -27,7 +39,7 @@ const createUser = async (userData) => {
 export default {
   findUserByEmail,
   findUserById,
-    findUserWithPassword,
+  findUserWithPassword,
+  updatePassword,
   createUser,
-    updatePassword,
 };

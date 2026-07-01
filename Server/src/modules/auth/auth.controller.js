@@ -21,7 +21,7 @@ const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const result = await authService.login(email, password);
+    const data = await authService.login(email, password, req.tenant._id);
 
     res.status(200).json({
       success: true,

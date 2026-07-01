@@ -40,8 +40,8 @@ const register = async (userData) => {
 
 // LOGIN
 
-const login = async (email, password) => {
-  const user = await authRepository.findUserByEmail(email);
+const login = async (email, password,tenantId) => {
+  const user = await authRepository.findUserByEmail(email, tenantId);
 
   if (!user) {
     throw new Error("Invalid Credentials");
@@ -72,8 +72,8 @@ const login = async (email, password) => {
 
 // GET CURRENT USER 
 
-const getCurrentUser = async (userId) => {
-  const user = await authRepository.findUserById(userId);
+const getCurrentUser = async (userId,tenantId) => {
+  const user = await authRepository.findUserById(userId,tenantId);
 
   if (!user) {
     throw new Error("User not found");
@@ -87,9 +87,10 @@ const getCurrentUser = async (userId) => {
 const changePassword = async (
   userId,
   oldPassword,
-  newPassword
+  newPassword,
+    tenantId
 ) => {
-  const user = await authRepository.findUserWithPassword(userId);
+  const user = await authRepository.findUserWithPassword(userId,tenantId);
 
   if (!user) {
     throw new Error("User not found");

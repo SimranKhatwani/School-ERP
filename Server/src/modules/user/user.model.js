@@ -41,9 +41,10 @@ const userSchema = new mongoose.Schema(
       required: true,
     },
 
-    school: {
+    tenant: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "School",
+      ref: "Tenant",
+      required: true,
     },
 
     isActive: {
